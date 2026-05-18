@@ -2,6 +2,7 @@ package com.sushma.jobtracker.service;
 
 import com.sushma.jobtracker.dto.ApplicationRequest;
 import com.sushma.jobtracker.entity.Application;
+import com.sushma.jobtracker.entity.User;
 import com.sushma.jobtracker.repository.ApplicationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,16 +15,16 @@ public class ApplicationService {
 
     private final ApplicationRepository repo;
 
-    public List<Application> getAll() {
-        return repo.findAll();
+    public List<Application> getAll(User currentUser) {
+        return repo.findByUser(currentUser);
     }
 
-    public Application getById(Long id) {
-        return repo.findById(id)
+    public Application getById(Long id, User currentUser) {
+        return repo.findByIdAndUser(id, currentUser)
                 .orElseThrow(() -> new RuntimeException("Application not found: " + id));
     }
 
-    public Application create(ApplicationRequest req) {
+    public Application create(ApplicationRequest req, User currentUser) {
         Application app = Application.builder()
                 .company(req.getCompany())
                 .role(req.getRole())
@@ -32,12 +33,13 @@ public class ApplicationService {
                 .notes(req.getNotes())
                 .status(req.getStatus())
                 .appliedDate(req.getAppliedDate())
+                .user(currentUser)          // attach owner
                 .build();
         return repo.save(app);
     }
 
-    public Application update(Long id, ApplicationRequest req) {
-        Application app = getById(id);
+    public Application update(Long id, ApplicationRequest req, User currentUser) {
+        Application app = getById(id, currentUser);   // also enforces ownership
         app.setCompany(req.getCompany());
         app.setRole(req.getRole());
         app.setLocation(req.getLocation());
@@ -50,10 +52,8 @@ public class ApplicationService {
         return repo.save(app);
     }
 
-    public void delete(Long id) {
-        if (!repo.existsById(id)) {
-            throw new RuntimeException("Application not found: " + id);
-        }
-        repo.deleteById(id);
+    public void delete(Long id, User currentUser) {
+        Application app = getById(id, currentUser);    // enforces ownership before delete
+        repo.delete(app);
     }
 }
