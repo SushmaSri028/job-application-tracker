@@ -6,6 +6,7 @@ import com.sushma.jobtracker.entity.User;
 import com.sushma.jobtracker.repository.ApplicationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import com.sushma.jobtracker.exception.NotFoundException;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class ApplicationService {
 
     public Application getById(Long id, User currentUser) {
         return repo.findByIdAndUser(id, currentUser)
-                .orElseThrow(() -> new RuntimeException("Application not found: " + id));
+                .orElseThrow(() -> new NotFoundException("Application not found: " + id));
     }
 
     public Application create(ApplicationRequest req, User currentUser) {

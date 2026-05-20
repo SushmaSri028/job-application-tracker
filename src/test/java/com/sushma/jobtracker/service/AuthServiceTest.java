@@ -17,6 +17,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
+import com.sushma.jobtracker.exception.DuplicateResourceException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -71,10 +72,7 @@ class AuthServiceTest {
 
         when(userRepository.existsByEmail("existing@test.com")).thenReturn(true);
 
-        RuntimeException ex = assertThrows(
-                RuntimeException.class,
-                () -> authService.register(req)
-        );
+        DuplicateResourceException ex = assertThrows(DuplicateResourceException.class, () -> authService.register(req));
         assertTrue(ex.getMessage().toLowerCase().contains("email"));
 
         verify(userRepository, never()).save(any());

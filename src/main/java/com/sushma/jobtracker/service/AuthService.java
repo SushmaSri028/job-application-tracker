@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.sushma.jobtracker.exception.DuplicateResourceException;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +23,7 @@ public class AuthService {
 
     public AuthResponse register(RegisterRequest req) {
         if (userRepository.existsByEmail(req.getEmail())) {
-            throw new RuntimeException("Email already in use: " + req.getEmail());
+            throw new DuplicateResourceException("Email already in use: " + req.getEmail());
         }
 
         User user = User.builder()

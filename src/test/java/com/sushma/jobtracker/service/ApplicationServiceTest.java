@@ -12,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import com.sushma.jobtracker.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -169,7 +170,7 @@ class ApplicationServiceTest {
     void delete_throwsWhenNotFound() {
         when(repo.findByIdAndUser(99L, testUser)).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> service.delete(99L, testUser));
+        assertThrows(NotFoundException.class, () -> service.getById(99L, testUser));
         verify(repo, never()).delete(any());
     }
 }
