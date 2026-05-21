@@ -1,0 +1,10 @@
+target/
+.idea/
+*.iml
+.git/
+.gitignore
+*.log
+node_modules/
+.DS_Store
+README.md
+HELP.md
